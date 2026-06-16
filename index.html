@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ScriptSprint</title>
+
+<style>
+:root{
+    --bg:#0b1120;
+    --card:#1e293b;
+    --primary:#6366f1;
+    --green:#22c55e;
+    --red:#ef4444;
+    --yellow:#facc15;
+    --text:#f8fafc;
+    --muted:#94a3b8;
+}
+
+*{
+    box-sizing:border-box;
+}
+
+body{
+    margin:0;
+    min-height:100vh;
+    background:linear-gradient(135deg,#0b1120,#111827);
+    color:var(--text);
+    font-family:system-ui,sans-serif;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:20px;
+}
+
+.container{
+    width:100%;
+    max-width:500px;
+    text-align:center;
+}
+
+h1{
+    margin:0;
+    font-size:2rem;
+}
+
+.subtitle{
+    color:var(--muted);
+    margin-bottom:25px;
+}
+
+.flashcard{
+    background:var(--card);
+    border-radius:20px;
+    padding:40px 20px;
+    min-height:280px;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    box-shadow:0 0 30px rgba(99,102,241,0.25);
+}
+
+.script{
+    font-size:6rem;
+    font-weight:bold;
+}
+
+.type{
+    margin-top:15px;
+    color:var(--muted);
+}
+
+button,input{
+    width:100%;
+    margin-top:15px;
+    padding:14px;
+    border:none;
+    border-radius:12px;
+    font-size:1rem;
+}
+
+input{
+    background:#111827;
+    color:white;
+    border:2px solid rgba(255,255,255,0.1);
+}
+
+input:focus{
+    outline:none;
+    border-color:var(--primary);
+}
+
+button{
+    background:var(--primary);
+    color:white;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+button:hover{
+    opacity:0.95;
+}
+
+.feedback{
+    min-height:25px;
+    margin-top:15px;
+    font-weight:bold;
+}
+
+.stats{
+    display:flex;
+    justify-content:space-between;
+    margin-top:20px;
+    color:var(--muted);
+    font-size:0.9rem;
+}
+
+.progress{
+    width:100%;
+    height:10px;
+    background:#1f2937;
+    border-radius:999px;
+    margin-top:20px;
+    overflow:hidden;
+}
+
+.progress-bar{
+    height:100%;
+    width:0%;
+    background:var(--primary);
+    transition:0.3s;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+    <h1>ScriptSprint</h1>
+    <div class="subtitle">Learn Kannada Script Fast</div>
+
+    <div class="flashcard">
+        <div class="script" id="character">ಅ</div>
+        <div class="type" id="type">Vowel</div>
+        <button onclick="playSound()">🔊 Hear Sound</button>
+    </div>
+
+    <input id="answer" placeholder="Type pronunciation (ex: a, ka)">
+    <button onclick="checkAnswer()">Submit</button>
+
+    <div class="feedback" id="feedback"></div>
+
+    <div class="stats">
+        <span id="score">Score: 0</span>
+        <span id="streak">Streak: 0</span>
+    </div>
+
+    <div class="progress">
+        <div class="progress-bar" id="progressBar"></div>
+    </div>
+</div>
+
+<script>
+const deck = [
+{char:"ಅ",sound:"a",type:"Vowel"},
+{char:"ಆ",sound:"aa",type:"Vowel"},
+{char:"ಇ",sound:"i",type:"Vowel"},
+{char:"ಈ",sound:"ii",type:"Vowel"},
+{char:"ಉ",sound:"u",type:"Vowel"},
+{char:"ಊ",sound:"uu",type:"Vowel"},
+{char:"ಕ",sound:"ka",type:"Consonant"},
+{char:"ಖ",sound:"kha",type:"Consonant"},
+{char:"ಗ",sound:"ga",type:"Consonant"},
+{char:"ಘ",sound:"gha",type:"Consonant"},
+{char:"ಚ",sound:"cha",type:"Consonant"},
+{char:"ಜ",sound:"ja",type:"Consonant"},
+{char:"ಟ",sound:"ta",type:"Consonant"},
+{char:"ಡ",sound:"da",type:"Consonant"},
+{char:"ತ",sound:"tha",type:"Consonant"},
+{char:"ದ",sound:"dha",type:"Consonant"},
+{char:"ಪ",sound:"pa",type:"Consonant"},
+{char:"ಬ",sound:"ba",type:"Consonant"},
+{char:"ಮ",sound:"ma",type:"Consonant"},
+{char:"ಯ",sound:"ya",type:"Consonant"},
+{char:"ರ",sound:"ra",type:"Consonant"},
+{char:"ಲ",sound:"la",type:"Consonant"},
+{char:"ವ",sound:"va",type:"Consonant"},
+{char:"ಸ",sound:"sa",type:"Consonant"},
+{char:"ಹ",sound:"ha",type:"Consonant"}
+];
+
+let current;
+let score=0;
+let streak=0;
+let answered=0;
+
+function randomCard(){
+    current = deck[Math.floor(Math.random()*deck.length)];
+    document.getElementById("character").innerText=current.char;
+    document.getElementById("type").innerText=current.type;
+    document.getElementById("answer").value="";
+}
+
+function playSound(){
+    speechSynthesis.cancel();
+    let utter=new SpeechSynthesisUtterance(current.sound);
+    utter.lang="en-IN";
+    utter.rate=0.7;
+    speechSynthesis.speak(utter);
+}
+
+function checkAnswer(){
+    const input=document.getElementById("answer").value.trim().toLowerCase();
+    const feedback=document.getElementById("feedback");
+
+    if(!input){
+        feedback.style.color="#facc15";
+        feedback.innerText="Type something!";
+        return;
+    }
+
+    if(input===current.sound){
+        score++;
+        streak++;
+        feedback.style.color="#22c55e";
+        feedback.innerText="Correct!";
+    }else{
+        streak=0;
+        feedback.style.color="#ef4444";
+        feedback.innerText="Wrong! Answer: "+current.sound;
+    }
+
+    answered++;
+    document.getElementById("score").innerText="Score: "+score;
+    document.getElementById("streak").innerText="Streak: "+streak;
+    document.getElementById("progressBar").style.width=
+        ((answered%25)/25)*100+"%";
+
+    setTimeout(()=>{
+        feedback.innerText="";
+        randomCard();
+    },1200);
+}
+
+document.getElementById("answer").addEventListener("keydown",function(e){
+    if(e.key==="Enter") checkAnswer();
+});
+
+randomCard();
+</script>
+
+</body>
+</html>
