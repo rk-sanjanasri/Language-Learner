@@ -1,0 +1,1027 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ScriptSprint — Learn Kannada Script</title>
+
+<style>
+:root{
+    --bg-1:#161229;
+    --bg-2:#1f1a3d;
+    --card:#241d44;
+    --card-light:#2d2456;
+    --ink:#fdf6ec;
+    --muted:#a89bc9;
+    --primary:#ff7a45;
+    --primary-dark:#e25a2b;
+    --gold:#ffc94d;
+    --teal:#3ddad7;
+    --green:#5fd97a;
+    --red:#ff5d6c;
+    --line:rgba(255,255,255,0.08);
+    --font-display:'Poppins',system-ui,sans-serif;
+    --font-body:'Poppins',system-ui,sans-serif;
+}
+
+*{ box-sizing:border-box; }
+
+@font-face{
+    font-family:'Poppins';
+    src:local('Poppins');
+}
+
+html,body{
+    margin:0;
+    min-height:100vh;
+}
+
+body{
+    background:
+        radial-gradient(circle at 15% 10%, rgba(255,122,69,0.16), transparent 40%),
+        radial-gradient(circle at 85% 85%, rgba(61,218,215,0.13), transparent 45%),
+        linear-gradient(160deg,var(--bg-1),var(--bg-2));
+    color:var(--ink);
+    font-family:var(--font-body);
+    display:flex;
+    justify-content:center;
+    padding:24px 16px 60px;
+}
+
+.app{
+    width:100%;
+    max-width:560px;
+}
+
+/* ---------- Top bar ---------- */
+.topbar{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom:18px;
+    flex-wrap:wrap;
+    gap:10px;
+}
+
+.brand{
+    display:flex;
+    align-items:center;
+    gap:10px;
+}
+
+.brand .mark{
+    width:42px;height:42px;
+    border-radius:12px;
+    background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+    display:flex;align-items:center;justify-content:center;
+    font-size:1.4rem;
+    font-weight:700;
+    box-shadow:0 6px 16px rgba(255,122,69,0.35);
+    transform:rotate(-6deg);
+}
+
+.brand h1{
+    margin:0;
+    font-size:1.3rem;
+    letter-spacing:0.2px;
+}
+
+.brand .tag{
+    color:var(--muted);
+    font-size:0.72rem;
+    margin-top:-2px;
+}
+
+.stat-pills{
+    display:flex;
+    gap:8px;
+}
+
+.pill{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:999px;
+    padding:6px 12px;
+    font-size:0.85rem;
+    font-weight:600;
+}
+
+.pill.streak{ color:var(--gold); }
+.pill.xp{ color:var(--teal); }
+
+/* ---------- Level header / progress ---------- */
+.level-card{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:18px;
+    padding:16px 18px;
+    margin-bottom:18px;
+}
+
+.level-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    margin-bottom:8px;
+}
+
+.level-row .lvl-name{
+    font-weight:700;
+    font-size:1.05rem;
+}
+
+.level-row .lvl-sub{
+    color:var(--muted);
+    font-size:0.8rem;
+}
+
+.xp-track{
+    height:10px;
+    border-radius:999px;
+    background:#150f2c;
+    overflow:hidden;
+    position:relative;
+}
+
+.xp-fill{
+    height:100%;
+    border-radius:999px;
+    background:linear-gradient(90deg,var(--teal),var(--green));
+    width:0%;
+    transition:width 0.4s ease;
+}
+
+/* ---------- Mode selector (home screen) ---------- */
+.section-label{
+    font-size:0.78rem;
+    text-transform:uppercase;
+    letter-spacing:1.2px;
+    color:var(--muted);
+    margin:22px 4px 10px;
+}
+
+.mode-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:14px;
+}
+
+.mode-card{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:16px;
+    padding:18px 14px;
+    text-align:left;
+    cursor:pointer;
+    transition:transform 0.15s ease, border-color 0.15s ease;
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+    color:var(--ink);
+}
+
+.mode-card:hover{
+    transform:translateY(-3px);
+    border-color:var(--primary);
+}
+
+.mode-card .icon{
+    width:38px;height:38px;
+    border-radius:10px;
+    display:flex;align-items:center;justify-content:center;
+    font-size:1.2rem;
+}
+
+.mode-card.flash .icon{ background:rgba(255,122,69,0.18); }
+.mode-card.choice .icon{ background:rgba(61,218,215,0.18); }
+.mode-card.match .icon{ background:rgba(95,217,122,0.18); }
+.mode-card.listen .icon{ background:rgba(255,201,77,0.18); }
+
+.mode-card .title{
+    font-weight:700;
+    font-size:0.98rem;
+}
+
+.mode-card .desc{
+    color:var(--muted);
+    font-size:0.76rem;
+    line-height:1.3;
+}
+
+/* ---------- Shared screen / card ---------- */
+.screen{ display:none; }
+.screen.active{ display:block; }
+
+.game-card{
+    background:var(--card);
+    border-radius:22px;
+    padding:36px 22px;
+    min-height:260px;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    box-shadow:0 10px 40px rgba(0,0,0,0.35);
+    position:relative;
+    overflow:hidden;
+    border:1px solid var(--line);
+}
+
+.back-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom:14px;
+}
+
+.back-btn{
+    background:none;
+    border:1px solid var(--line);
+    color:var(--muted);
+    border-radius:10px;
+    padding:8px 12px;
+    font-size:0.8rem;
+    cursor:pointer;
+    width:auto;
+}
+.back-btn:hover{ color:var(--ink); border-color:var(--primary); }
+
+.mini-progress{
+    flex:1;
+    margin-left:14px;
+    height:8px;
+    border-radius:999px;
+    background:#150f2c;
+    overflow:hidden;
+}
+.mini-progress-fill{
+    height:100%;
+    background:var(--primary);
+    width:0%;
+    transition:width 0.3s ease;
+}
+
+/* ---------- Flashcard mode ---------- */
+.script{
+    font-size:6rem;
+    font-weight:700;
+    line-height:1;
+}
+.type-tag{
+    margin-top:14px;
+    color:var(--muted);
+    font-size:0.85rem;
+    background:rgba(255,255,255,0.05);
+    padding:4px 12px;
+    border-radius:999px;
+}
+
+button.primary,input{
+    width:100%;
+    margin-top:14px;
+    padding:14px;
+    border:none;
+    border-radius:12px;
+    font-size:1rem;
+    font-family:inherit;
+}
+
+input{
+    background:#150f2c;
+    color:white;
+    border:2px solid var(--line);
+}
+input:focus{ outline:none; border-color:var(--primary); }
+
+button.primary{
+    background:var(--primary);
+    color:#1b1330;
+    font-weight:700;
+    cursor:pointer;
+    transition:transform 0.1s ease, opacity 0.15s ease;
+}
+button.primary:hover{ opacity:0.92; }
+button.primary:active{ transform:scale(0.98); }
+button.primary.secondary{
+    background:transparent;
+    border:2px solid var(--line);
+    color:var(--ink);
+}
+
+button.sound-btn{
+    width:auto;
+    margin-top:18px;
+    padding:10px 18px;
+    border-radius:999px;
+    background:rgba(255,255,255,0.08);
+    border:1px solid var(--line);
+    color:var(--ink);
+    cursor:pointer;
+    font-size:0.9rem;
+}
+button.sound-btn:hover{ background:rgba(255,255,255,0.14); }
+
+.feedback{
+    min-height:26px;
+    margin-top:14px;
+    font-weight:700;
+    font-size:0.95rem;
+}
+
+/* ---------- Multiple choice mode ---------- */
+.choice-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+    width:100%;
+    margin-top:18px;
+}
+.choice-btn{
+    padding:14px 8px;
+    border-radius:12px;
+    border:2px solid var(--line);
+    background:#150f2c;
+    color:var(--ink);
+    font-size:1.05rem;
+    font-weight:600;
+    cursor:pointer;
+    transition:all 0.15s ease;
+}
+.choice-btn:hover{ border-color:var(--primary); }
+.choice-btn.correct{ background:rgba(95,217,122,0.25); border-color:var(--green); }
+.choice-btn.wrong{ background:rgba(255,93,108,0.25); border-color:var(--red); }
+.choice-btn:disabled{ cursor:default; opacity:0.85; }
+
+/* ---------- Match pairs mode ---------- */
+.match-grid{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:8px;
+    width:100%;
+}
+.match-tile{
+    aspect-ratio:1;
+    border-radius:10px;
+    background:#150f2c;
+    border:2px solid var(--line);
+    display:flex;align-items:center;justify-content:center;
+    font-size:1.5rem;
+    font-weight:700;
+    cursor:pointer;
+    color:var(--ink);
+    transition:all 0.15s ease;
+}
+.match-tile.romanized{ font-size:0.95rem; }
+.match-tile.selected{ border-color:var(--teal); background:rgba(61,218,215,0.15); }
+.match-tile.matched{ border-color:var(--green); background:rgba(95,217,122,0.18); opacity:0.55; cursor:default; }
+.match-tile.shake{ animation:shake 0.3s; border-color:var(--red); }
+
+@keyframes shake{
+    0%,100%{ transform:translateX(0); }
+    25%{ transform:translateX(-6px); }
+    75%{ transform:translateX(6px); }
+}
+
+/* ---------- Listening mode ---------- */
+.listen-icon{
+    width:90px;height:90px;
+    border-radius:50%;
+    background:rgba(255,201,77,0.15);
+    display:flex;align-items:center;justify-content:center;
+    font-size:2.4rem;
+    cursor:pointer;
+    border:2px solid var(--gold);
+    transition:transform 0.15s ease;
+}
+.listen-icon:hover{ transform:scale(1.06); }
+.listen-icon.playing{ animation:pulse 0.6s ease infinite; }
+@keyframes pulse{
+    0%,100%{ box-shadow:0 0 0 0 rgba(255,201,77,0.35); }
+    50%{ box-shadow:0 0 0 14px rgba(255,201,77,0); }
+}
+
+/* ---------- End-of-round summary ---------- */
+.summary-stats{
+    display:flex;
+    justify-content:space-around;
+    width:100%;
+    margin:18px 0;
+}
+.summary-stat{
+    text-align:center;
+}
+.summary-stat .num{
+    font-size:1.8rem;
+    font-weight:700;
+}
+.summary-stat .lbl{
+    color:var(--muted);
+    font-size:0.75rem;
+    text-transform:uppercase;
+    letter-spacing:0.6px;
+}
+
+/* ---------- Confetti ---------- */
+.confetti-piece{
+    position:absolute;
+    top:-10px;
+    border-radius:2px;
+    pointer-events:none;
+    animation:fall linear forwards;
+}
+@keyframes fall{
+    to{ transform:translateY(340px) rotate(540deg); opacity:0; }
+}
+
+/* ---------- Streak flame pulse on increment ---------- */
+.pill.streak.bump{
+    animation:bump 0.4s ease;
+}
+@keyframes bump{
+    0%{ transform:scale(1); }
+    40%{ transform:scale(1.25); }
+    100%{ transform:scale(1); }
+}
+
+@media (max-width:420px){
+    .script{ font-size:4.6rem; }
+    .match-grid{ grid-template-columns:repeat(4,1fr); gap:6px; }
+    .mode-grid{ gap:10px; }
+}
+</style>
+</head>
+<body>
+
+<div class="app">
+
+    <div class="topbar">
+        <div class="brand">
+            <div class="mark">ಅ</div>
+            <div>
+                <h1>ScriptSprint</h1>
+                <div class="tag">Learn Kannada script, one tile at a time</div>
+            </div>
+        </div>
+        <div class="stat-pills">
+            <div class="pill streak" id="streakPill">🔥 0</div>
+            <div class="pill xp" id="xpPill">⭐ 0 XP</div>
+        </div>
+    </div>
+
+    <div class="level-card">
+        <div class="level-row">
+            <span class="lvl-name" id="lvlName">Level 1 · Beginner</span>
+            <span class="lvl-sub" id="lvlSub">0 / 100 XP</span>
+        </div>
+        <div class="xp-track"><div class="xp-fill" id="xpFill"></div></div>
+    </div>
+
+    <!-- ============ HOME SCREEN ============ -->
+    <div class="screen active" id="screen-home">
+        <div class="section-label">Choose a game</div>
+        <div class="mode-grid">
+            <div class="mode-card flash" onclick="startMode('flash')">
+                <div class="icon">🔊</div>
+                <div class="title">Flashcard Sprint</div>
+                <div class="desc">See a letter, hear it, type the sound.</div>
+            </div>
+            <div class="mode-card choice" onclick="startMode('choice')">
+                <div class="icon">🎯</div>
+                <div class="title">Multiple Choice</div>
+                <div class="desc">Pick the right pronunciation, fast.</div>
+            </div>
+            <div class="mode-card match" onclick="startMode('match')">
+                <div class="icon">🧩</div>
+                <div class="title">Match Pairs</div>
+                <div class="desc">Flip tiles, match script to sound.</div>
+            </div>
+            <div class="mode-card listen" onclick="startMode('listen')">
+                <div class="icon">🎧</div>
+                <div class="title">Listening Mode</div>
+                <div class="desc">Hear it first, tap the matching letter.</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============ FLASHCARD MODE ============ -->
+    <div class="screen" id="screen-flash">
+        <div class="back-row">
+            <button class="back-btn" onclick="goHome()">← Back</button>
+            <div class="mini-progress"><div class="mini-progress-fill" id="flashProgress"></div></div>
+        </div>
+        <div class="game-card">
+            <div class="script" id="flashChar">ಅ</div>
+            <div class="type-tag" id="flashType">Vowel</div>
+            <button class="sound-btn" onclick="playSound(flashCurrent)">🔊 Hear sound</button>
+        </div>
+        <input id="flashAnswer" placeholder="Type pronunciation (ex: a, ka)">
+        <button class="primary" onclick="checkFlashAnswer()">Submit</button>
+        <div class="feedback" id="flashFeedback"></div>
+    </div>
+
+    <!-- ============ MULTIPLE CHOICE MODE ============ -->
+    <div class="screen" id="screen-choice">
+        <div class="back-row">
+            <button class="back-btn" onclick="goHome()">← Back</button>
+            <div class="mini-progress"><div class="mini-progress-fill" id="choiceProgress"></div></div>
+        </div>
+        <div class="game-card">
+            <div class="script" id="choiceChar">ಕ</div>
+            <div class="type-tag" id="choiceType">Consonant</div>
+        </div>
+        <div class="choice-grid" id="choiceGrid"></div>
+        <div class="feedback" id="choiceFeedback"></div>
+    </div>
+
+    <!-- ============ MATCH PAIRS MODE ============ -->
+    <div class="screen" id="screen-match">
+        <div class="back-row">
+            <button class="back-btn" onclick="goHome()">← Back</button>
+            <div class="mini-progress"><div class="mini-progress-fill" id="matchProgress"></div></div>
+        </div>
+        <div class="match-grid" id="matchGrid"></div>
+        <div class="feedback" id="matchFeedback"></div>
+    </div>
+
+    <!-- ============ LISTENING MODE ============ -->
+    <div class="screen" id="screen-listen">
+        <div class="back-row">
+            <button class="back-btn" onclick="goHome()">← Back</button>
+            <div class="mini-progress"><div class="mini-progress-fill" id="listenProgress"></div></div>
+        </div>
+        <div class="game-card">
+            <div class="listen-icon" id="listenIcon" onclick="playListenSound()">🎧</div>
+            <div class="type-tag" style="margin-top:16px;">Tap play, then choose the letter you heard</div>
+        </div>
+        <div class="choice-grid" id="listenGrid"></div>
+        <div class="feedback" id="listenFeedback"></div>
+    </div>
+
+    <!-- ============ ROUND SUMMARY ============ -->
+    <div class="screen" id="screen-summary">
+        <div class="game-card">
+            <div style="font-size:2.4rem;">🏆</div>
+            <div style="font-weight:700; font-size:1.2rem; margin-top:8px;">Round Complete!</div>
+            <div class="summary-stats">
+                <div class="summary-stat">
+                    <div class="num" id="sumCorrect">0</div>
+                    <div class="lbl">Correct</div>
+                </div>
+                <div class="summary-stat">
+                    <div class="num" id="sumXp">0</div>
+                    <div class="lbl">XP Earned</div>
+                </div>
+                <div class="summary-stat">
+                    <div class="num" id="sumStreak">0</div>
+                    <div class="lbl">Best Streak</div>
+                </div>
+            </div>
+            <button class="primary" onclick="goHome()">Continue</button>
+        </div>
+    </div>
+
+</div>
+
+<script>
+/* ===================== Data ===================== */
+const deck = [
+{char:"ಅ",sound:"a",type:"Vowel"},
+{char:"ಆ",sound:"aa",type:"Vowel"},
+{char:"ಇ",sound:"i",type:"Vowel"},
+{char:"ಈ",sound:"ii",type:"Vowel"},
+{char:"ಉ",sound:"u",type:"Vowel"},
+{char:"ಊ",sound:"uu",type:"Vowel"},
+{char:"ಕ",sound:"ka",type:"Consonant"},
+{char:"ಖ",sound:"kha",type:"Consonant"},
+{char:"ಗ",sound:"ga",type:"Consonant"},
+{char:"ಘ",sound:"gha",type:"Consonant"},
+{char:"ಚ",sound:"cha",type:"Consonant"},
+{char:"ಜ",sound:"ja",type:"Consonant"},
+{char:"ಟ",sound:"ta",type:"Consonant"},
+{char:"ಡ",sound:"da",type:"Consonant"},
+{char:"ತ",sound:"tha",type:"Consonant"},
+{char:"ದ",sound:"dha",type:"Consonant"},
+{char:"ಪ",sound:"pa",type:"Consonant"},
+{char:"ಬ",sound:"ba",type:"Consonant"},
+{char:"ಮ",sound:"ma",type:"Consonant"},
+{char:"ಯ",sound:"ya",type:"Consonant"},
+{char:"ರ",sound:"ra",type:"Consonant"},
+{char:"ಲ",sound:"la",type:"Consonant"},
+{char:"ವ",sound:"va",type:"Consonant"},
+{char:"ಸ",sound:"sa",type:"Consonant"},
+{char:"ಹ",sound:"ha",type:"Consonant"}
+];
+
+const ROUND_LENGTH = 10;
+
+/* ===================== Global progress state ===================== */
+let totalXp = 0;
+let streak = 0;
+let bestStreakThisRound = 0;
+
+function levelInfo(xp){
+    const perLevel = 100;
+    const level = Math.floor(xp / perLevel) + 1;
+    const into = xp % perLevel;
+    const names = ["Beginner","Learner","Reader","Script Sprinter","Script Master"];
+    const name = names[Math.min(level-1, names.length-1)];
+    return {level, into, perLevel, name};
+}
+
+function refreshHeader(){
+    document.getElementById("streakPill").innerText = "🔥 " + streak;
+    document.getElementById("xpPill").innerText = "⭐ " + totalXp + " XP";
+    const li = levelInfo(totalXp);
+    document.getElementById("lvlName").innerText = "Level " + li.level + " · " + li.name;
+    document.getElementById("lvlSub").innerText = li.into + " / " + li.perLevel + " XP";
+    document.getElementById("xpFill").style.width = ((li.into/li.perLevel)*100) + "%";
+}
+
+function bumpStreakPill(){
+    const pill = document.getElementById("streakPill");
+    pill.classList.remove("bump");
+    void pill.offsetWidth;
+    pill.classList.add("bump");
+}
+
+function addCorrect(){
+    streak++;
+    bestStreakThisRound = Math.max(bestStreakThisRound, streak);
+    totalXp += 10 + Math.min(streak,5); // small streak bonus
+    refreshHeader();
+    bumpStreakPill();
+    fireConfetti();
+}
+
+function addWrong(){
+    streak = 0;
+    refreshHeader();
+}
+
+/* ===================== Confetti ===================== */
+function fireConfetti(){
+    const colors = ["#ff7a45","#3ddad7","#5fd97a","#ffc94d"];
+    const card = document.querySelector(".screen.active .game-card") || document.querySelector(".screen.active");
+    if(!card) return;
+    for(let i=0;i<14;i++){
+        const piece = document.createElement("div");
+        piece.className = "confetti-piece";
+        const size = 5 + Math.random()*5;
+        piece.style.width = size+"px";
+        piece.style.height = (size*1.6)+"px";
+        piece.style.left = (Math.random()*100)+"%";
+        piece.style.background = colors[Math.floor(Math.random()*colors.length)];
+        piece.style.animationDuration = (0.7+Math.random()*0.5)+"s";
+        card.appendChild(piece);
+        setTimeout(()=>piece.remove(), 1300);
+    }
+}
+
+/* ===================== Navigation ===================== */
+function showScreen(id){
+    document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+    document.getElementById(id).classList.add("active");
+}
+
+function goHome(){
+    showScreen("screen-home");
+}
+
+function shuffledDeck(n){
+    const copy = [...deck];
+    for(let i=copy.length-1;i>0;i--){
+        const j = Math.floor(Math.random()*(i+1));
+        [copy[i],copy[j]] = [copy[j],copy[i]];
+    }
+    return copy.slice(0, n);
+}
+
+function playSound(card){
+    if(!card) return;
+    speechSynthesis.cancel();
+    let utter = new SpeechSynthesisUtterance(card.sound);
+    utter.lang = "en-IN";
+    utter.rate = 0.7;
+    speechSynthesis.speak(utter);
+}
+
+function endRound(){
+    bestStreakThisRound = 0; // reset tracker for next round but keep live streak
+    document.getElementById("sumCorrect").innerText = roundCorrect + " / " + ROUND_LENGTH;
+    document.getElementById("sumXp").innerText = roundXpEarned;
+    document.getElementById("sumStreak").innerText = roundBestStreak;
+    showScreen("screen-summary");
+}
+
+let roundCorrect = 0;
+let roundXpEarned = 0;
+let roundBestStreak = 0;
+let xpBeforeRound = 0;
+
+function startRoundTracking(){
+    roundCorrect = 0;
+    roundXpEarned = 0;
+    roundBestStreak = 0;
+    xpBeforeRound = totalXp;
+}
+function trackResult(correct){
+    if(correct){
+        roundCorrect++;
+        addCorrect();
+    }else{
+        addWrong();
+    }
+    roundXpEarned = totalXp - xpBeforeRound;
+    roundBestStreak = Math.max(roundBestStreak, streak);
+}
+
+function startMode(mode){
+    startRoundTracking();
+    if(mode==="flash") startFlash();
+    if(mode==="choice") startChoice();
+    if(mode==="match") startMatch();
+    if(mode==="listen") startListen();
+}
+
+/* ===================== FLASHCARD MODE ===================== */
+let flashQueue = [];
+let flashIndex = 0;
+let flashCurrent = null;
+
+function startFlash(){
+    flashQueue = shuffledDeck(ROUND_LENGTH);
+    flashIndex = 0;
+    showScreen("screen-flash");
+    nextFlashCard();
+}
+
+function nextFlashCard(){
+    if(flashIndex >= flashQueue.length){
+        endRound();
+        return;
+    }
+    flashCurrent = flashQueue[flashIndex];
+    document.getElementById("flashChar").innerText = flashCurrent.char;
+    document.getElementById("flashType").innerText = flashCurrent.type;
+    document.getElementById("flashAnswer").value = "";
+    document.getElementById("flashFeedback").innerText = "";
+    document.getElementById("flashProgress").style.width = ((flashIndex/ROUND_LENGTH)*100)+"%";
+    document.getElementById("flashAnswer").focus();
+}
+
+function checkFlashAnswer(){
+    const input = document.getElementById("flashAnswer").value.trim().toLowerCase();
+    const feedback = document.getElementById("flashFeedback");
+    if(!input){
+        feedback.style.color = "var(--gold)";
+        feedback.innerText = "Type something!";
+        return;
+    }
+    const correct = input === flashCurrent.sound;
+    if(correct){
+        feedback.style.color = "var(--green)";
+        feedback.innerText = "Correct! +" + (10+Math.min(streak+1,5)) + " XP";
+    }else{
+        feedback.style.color = "var(--red)";
+        feedback.innerText = "Not quite. Answer: " + flashCurrent.sound;
+    }
+    trackResult(correct);
+    flashIndex++;
+    setTimeout(nextFlashCard, 1100);
+}
+
+document.getElementById("flashAnswer").addEventListener("keydown", function(e){
+    if(e.key === "Enter") checkFlashAnswer();
+});
+
+/* ===================== MULTIPLE CHOICE MODE ===================== */
+let choiceQueue = [];
+let choiceIndex = 0;
+let choiceCurrent = null;
+
+function startChoice(){
+    choiceQueue = shuffledDeck(ROUND_LENGTH);
+    choiceIndex = 0;
+    showScreen("screen-choice");
+    nextChoiceCard();
+}
+
+function buildChoiceOptions(correctCard){
+    const pool = deck.filter(d => d.sound !== correctCard.sound);
+    const options = [correctCard];
+    while(options.length < 4){
+        const pick = pool[Math.floor(Math.random()*pool.length)];
+        if(!options.find(o=>o.sound===pick.sound)) options.push(pick);
+    }
+    for(let i=options.length-1;i>0;i--){
+        const j = Math.floor(Math.random()*(i+1));
+        [options[i],options[j]] = [options[j],options[i]];
+    }
+    return options;
+}
+
+function nextChoiceCard(){
+    if(choiceIndex >= choiceQueue.length){
+        endRound();
+        return;
+    }
+    choiceCurrent = choiceQueue[choiceIndex];
+    document.getElementById("choiceChar").innerText = choiceCurrent.char;
+    document.getElementById("choiceType").innerText = choiceCurrent.type;
+    document.getElementById("choiceFeedback").innerText = "";
+    document.getElementById("choiceProgress").style.width = ((choiceIndex/ROUND_LENGTH)*100)+"%";
+
+    const options = buildChoiceOptions(choiceCurrent);
+    const grid = document.getElementById("choiceGrid");
+    grid.innerHTML = "";
+    options.forEach(opt=>{
+        const btn = document.createElement("button");
+        btn.className = "choice-btn";
+        btn.innerText = opt.sound;
+        btn.onclick = () => handleChoiceClick(btn, opt);
+        grid.appendChild(btn);
+    });
+}
+
+function handleChoiceClick(btn, opt){
+    const buttons = document.querySelectorAll("#choiceGrid .choice-btn");
+    buttons.forEach(b => b.disabled = true);
+    const correct = opt.sound === choiceCurrent.sound;
+    const feedback = document.getElementById("choiceFeedback");
+    if(correct){
+        btn.classList.add("correct");
+        feedback.style.color = "var(--green)";
+        feedback.innerText = "Correct!";
+    }else{
+        btn.classList.add("wrong");
+        buttons.forEach(b=>{ if(b.innerText===choiceCurrent.sound) b.classList.add("correct"); });
+        feedback.style.color = "var(--red)";
+        feedback.innerText = "Answer: " + choiceCurrent.sound;
+    }
+    trackResult(correct);
+    choiceIndex++;
+    setTimeout(nextChoiceCard, 1100);
+}
+
+/* ===================== MATCH PAIRS MODE ===================== */
+let matchTiles = [];
+let matchSelected = [];
+let matchPairsFound = 0;
+let matchTotalPairs = 6;
+
+function startMatch(){
+    const cards = shuffledDeck(matchTotalPairs);
+    matchTiles = [];
+    cards.forEach((c, idx)=>{
+        matchTiles.push({key:idx, display:c.char, sound:c.sound, kind:"script"});
+        matchTiles.push({key:idx, display:c.sound, sound:c.sound, kind:"romanized"});
+    });
+    for(let i=matchTiles.length-1;i>0;i--){
+        const j = Math.floor(Math.random()*(i+1));
+        [matchTiles[i],matchTiles[j]] = [matchTiles[j],matchTiles[i]];
+    }
+    matchSelected = [];
+    matchPairsFound = 0;
+    document.getElementById("matchFeedback").innerText = "";
+    document.getElementById("matchProgress").style.width = "0%";
+    showScreen("screen-match");
+    renderMatchGrid();
+}
+
+function renderMatchGrid(){
+    const grid = document.getElementById("matchGrid");
+    grid.innerHTML = "";
+    matchTiles.forEach((tile, i)=>{
+        const div = document.createElement("div");
+        div.className = "match-tile" + (tile.kind==="romanized" ? " romanized" : "");
+        div.innerText = tile.display;
+        div.dataset.index = i;
+        div.onclick = () => handleMatchClick(i, div);
+        grid.appendChild(div);
+    });
+}
+
+function handleMatchClick(index, el){
+    const tile = matchTiles[index];
+    if(el.classList.contains("matched") || el.classList.contains("selected")) return;
+    if(matchSelected.length === 2) return;
+
+    el.classList.add("selected");
+    matchSelected.push({index, el, tile});
+
+    if(matchSelected.length === 2){
+        const [first, second] = matchSelected;
+        const isMatch = first.tile.key === second.tile.key && first.tile.kind !== second.tile.kind;
+        if(isMatch){
+            setTimeout(()=>{
+                first.el.classList.remove("selected");
+                second.el.classList.remove("selected");
+                first.el.classList.add("matched");
+                second.el.classList.add("matched");
+                matchPairsFound++;
+                document.getElementById("matchProgress").style.width = ((matchPairsFound/matchTotalPairs)*100)+"%";
+                trackResult(true);
+                matchSelected = [];
+                if(matchPairsFound >= matchTotalPairs){
+                    document.getElementById("matchFeedback").style.color = "var(--green)";
+                    document.getElementById("matchFeedback").innerText = "All matched!";
+                    setTimeout(endRound, 900);
+                }
+            }, 250);
+        }else{
+            first.el.classList.add("shake");
+            second.el.classList.add("shake");
+            trackResult(false);
+            setTimeout(()=>{
+                first.el.classList.remove("selected","shake");
+                second.el.classList.remove("selected","shake");
+                matchSelected = [];
+            }, 500);
+        }
+    }
+}
+
+/* ===================== LISTENING MODE ===================== */
+let listenQueue = [];
+let listenIndex = 0;
+let listenCurrent = null;
+
+function startListen(){
+    listenQueue = shuffledDeck(ROUND_LENGTH);
+    listenIndex = 0;
+    showScreen("screen-listen");
+    nextListenCard();
+}
+
+function nextListenCard(){
+    if(listenIndex >= listenQueue.length){
+        endRound();
+        return;
+    }
+    listenCurrent = listenQueue[listenIndex];
+    document.getElementById("listenFeedback").innerText = "";
+    document.getElementById("listenProgress").style.width = ((listenIndex/ROUND_LENGTH)*100)+"%";
+
+    const pool = deck.filter(d => d.char !== listenCurrent.char);
+    const options = [listenCurrent];
+    while(options.length < 4){
+        const pick = pool[Math.floor(Math.random()*pool.length)];
+        if(!options.find(o=>o.char===pick.char)) options.push(pick);
+    }
+    for(let i=options.length-1;i>0;i--){
+        const j = Math.floor(Math.random()*(i+1));
+        [options[i],options[j]] = [options[j],options[i]];
+    }
+    const grid = document.getElementById("listenGrid");
+    grid.innerHTML = "";
+    options.forEach(opt=>{
+        const btn = document.createElement("button");
+        btn.className = "choice-btn";
+        btn.innerText = opt.char;
+        btn.onclick = () => handleListenClick(btn, opt);
+        grid.appendChild(btn);
+    });
+
+    setTimeout(()=>playListenSound(), 300);
+}
+
+function playListenSound(){
+    const icon = document.getElementById("listenIcon");
+    icon.classList.add("playing");
+    speechSynthesis.cancel();
+    let utter = new SpeechSynthesisUtterance(listenCurrent.sound);
+    utter.lang = "en-IN";
+    utter.rate = 0.7;
+    utter.onend = () => icon.classList.remove("playing");
+    speechSynthesis.speak(utter);
+}
+
+function handleListenClick(btn, opt){
+    const buttons = document.querySelectorAll("#listenGrid .choice-btn");
+    buttons.forEach(b => b.disabled = true);
+    const correct = opt.char === listenCurrent.char;
+    const feedback = document.getElementById("listenFeedback");
+    if(correct){
+        btn.classList.add("correct");
+        feedback.style.color = "var(--green)";
+        feedback.innerText = "Correct!";
+    }else{
+        btn.classList.add("wrong");
+        buttons.forEach(b=>{ if(b.innerText===listenCurrent.char) b.classList.add("correct"); });
+        feedback.style.color = "var(--red)";
+        feedback.innerText = "Answer: " + listenCurrent.char;
+    }
+    trackResult(correct);
+    listenIndex++;
+    setTimeout(nextListenCard, 1100);
+}
+
+/* ===================== Init ===================== */
+refreshHeader();
+</script>
+
+</body>
+</html>
